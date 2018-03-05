@@ -65,34 +65,50 @@ export default class App extends React.Component {
 
     console.log(response.location);
     console.log(response.weather);
+    console.log(response.weather.currently.icon);
+    console.log(response.weather.currently.summary);
+    console.log(response.weather.currently.temperature);
 
     // manipulate state
     this.setState({
       locationName: response.location,
-      currentTemp: response.weater.currently,
-      currentCondition: response.weather
+      currentTemp: response.weater.currently.temperature;
+      currentCondition: response.weather.currently.summary;
+      currentIcon:response.weather.currently.icon,
+      forecast:response.weather.daily.data
     });
   }
 
   render() {
-    let current_icon= "http://golearntocode.com/images/dice/"+ this.state.die1 + ".png";
-    let forecast_icon= "http://golearntocode.com/images/dice/"+ this.state.die2 + ".png";
     // Three Views inside the parent view
     // 1. TextInput and Button for city name and to call getWeather()
     // 2. Current weather conditions (styles provided with currentIcon, locationText,
     //    currentTemperature, currentSummary)
     // 3. Forecast (forecastDay, forecastIcon, forecastTemperature)
-    let forecast = []; // this will eventually hold the JSX elements for each day
 
+
+    let forecast = []; // this will eventually hold the JSX elements for each day
+    for(let i=0; i<5; i++){
+      forecast.push(
+        <View style = {styles.forecastDay} key ={i}>
+        <Text style={styles.forecastIcon}>{this.state.forecast[i] && (<Icon size ={45} name={icon(this.state.forecast[i].icon)} />)} </Text>
+        <Text> {this.state.forecast[i] && (<Text style ={styles.forecastTemperature}>{Math.round(this.state.forecast[i].temperatureHigh)}</Text>)}</Text>
+        </View>
+      )
+    }
     return (
       <View style={styles.container}>
         <View>
-          <TextInput style={{width: 150, height: 40, borderColor: 'gray', borderWidth: 1}} onChangeText={(text) => this.textInputChanged(text)} />
+          <TextInput style={{width: 100, height: 40, borderColor: 'gray', borderWidth: 1}} onChangeText={(text) => this.textInputChanged(text)} />
           <Button onPress={() => this.getWeather()} title="Get the weather!" />
         </View>
         <View style={styles.currentWeather}>
           {/* Current weather conditions */}
           <Text style={styles.locationText}>{this.state.locationName}</Text>
+          <Text style={styles.currentIcon}><Icon size={100} name={icon(this.state.currentIcon)} /></Text>
+          <Text style={styles.locationText}>{this.state.locationName}</Text>
+          <Text style={styles.currentTemperature}>{Math.round(this.state.currentTemperature)}</Text>
+          <Text style={styles.currentSummary}>{this.state.currentSummary}</Text>
         </View>
         <View style={styles.forecast}>
           {forecast}
